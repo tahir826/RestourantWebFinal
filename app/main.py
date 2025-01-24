@@ -8,12 +8,13 @@ app = FastAPI()
 app.on_event("startup")(startup)
 app.on_event("shutdown")(shutdown)
 
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to the Modular Hotel Backend API!"}
+
 # Add routes to the app
 app.include_router(user.router, prefix="/users")
 app.include_router(booking.router, prefix="/bookings")
 app.include_router(contact_us.router, prefix="/contact-us")
 app.include_router(admin.router, prefix="/admin")
-
-@app.get("/")
-def root():
-    return {"message": "Welcome to the Modular Hotel Backend API!"}

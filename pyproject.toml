@@ -12,7 +12,9 @@ dependencies = [
     "passlib>=1.7.4",
     "pip>=24.3.1",
     "pydantic[email]>=2.10.5",
+    "pyjwt>=2.10.1",
     "python-dotenv>=1.0.1",
+    "python-jose>=3.3.0",
     "python-multipart>=0.0.20",
     "uvicorn>=0.34.0",
 ]
