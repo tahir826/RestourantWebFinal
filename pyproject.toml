@@ -1,5 +1,5 @@
 [project]
-name = "hotelbackend"
+name = "restourantweb"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -8,13 +8,10 @@ dependencies = [
     "asyncpg>=0.30.0",
     "bcrypt>=4.2.1",
     "datetime>=5.5",
-    "fastapi>=0.115.6",
+    "email-validator>=2.2.0",
+    "fastapi>=0.115.7",
     "passlib>=1.7.4",
-    "pip>=24.3.1",
-    "pydantic[email]>=2.10.5",
-    "pyjwt>=2.10.1",
     "python-dotenv>=1.0.1",
-    "python-jose>=3.3.0",
     "python-multipart>=0.0.20",
     "uvicorn>=0.34.0",
 ]

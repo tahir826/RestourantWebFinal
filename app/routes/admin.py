@@ -91,6 +91,29 @@ async def add_event(name: str, description: str, price: float, image: UploadFile
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
+# Get All Events
+@router.get("/get-all-events/")
+async def get_all_events():
+    conn = Database.pool
+    try:
+        events = await conn.fetch("SELECT * FROM events")
+        if not events:
+            raise HTTPException(status_code=404, detail="No events found.")
+        return {
+            "events": [
+                {
+                    "id": event["id"],
+                    "name": event["name"],
+                    "description": event["description"],
+                    "price": event["price"],
+                    "pic_path": event["pic_path"]
+                }
+                for event in events
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
 
 # Admin Get All Table Bookings
 @router.get("/get-all-bookings/")
@@ -141,5 +164,17 @@ async def delete_event(id: int):
         if result == "DELETE 0":  # If no rows were deleted
             raise HTTPException(status_code=404, detail=f"Event with ID {id} not found.")
         return {"message": "Event deleted successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+    
+# Delete a Booking by ID
+@router.delete("/delete-booking/{id}/")
+async def delete_booking(id: int):
+    conn = Database.pool
+    try:
+        result = await conn.execute("DELETE FROM bookings WHERE id = $1", id)
+        if result == "DELETE 0":  # If no rows were deleted
+            raise HTTPException(status_code=404, detail=f"Booking with ID {id} not found.")
+        return {"message": "Booking deleted successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
