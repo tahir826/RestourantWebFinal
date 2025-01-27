@@ -178,3 +178,114 @@ async def delete_booking(id: int):
         return {"message": "Booking deleted successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+@router.put("/update-event/{id}/")
+async def update_event(id: int, name: str = None, description: str = None, price: float = None, image: UploadFile = None):
+    conn = Database.pool
+    try:
+        update_columns = []
+        values = []
+
+        if name:
+            update_columns.append("name = $1")
+            values.append(name)
+        if description:
+            update_columns.append("description = $" + str(len(values) + 1))
+            values.append(description)
+        if price is not None:
+            update_columns.append("price = $" + str(len(values) + 1))
+            values.append(price)
+        if image:
+            image_path = await save_file(image)
+            update_columns.append("pic_path = $" + str(len(values) + 1))
+            values.append(image_path)
+        
+        if not update_columns:
+            raise HTTPException(status_code=400, detail="No fields to update were provided.")
+
+        values.append(id)
+        update_query = f"""
+            UPDATE events 
+            SET {', '.join(update_columns)} 
+            WHERE id = ${len(values)}
+        """
+        result = await conn.execute(update_query, *values)
+        if result == "UPDATE 0":
+            raise HTTPException(status_code=404, detail=f"Event with ID {id} not found.")
+        return {"message": "Event updated successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+# Update Service
+@router.put("/update-service/{id}/")
+async def update_service(id: int, name: str = None, description: str = None, image: UploadFile = None):
+    conn = Database.pool
+    try:
+        update_columns = []
+        values = []
+
+        if name:
+            update_columns.append("name = $1")
+            values.append(name)
+        if description:
+            update_columns.append("description = $" + str(len(values) + 1))
+            values.append(description)
+        if image:
+            image_path = await save_file(image)
+            update_columns.append("image_path = $" + str(len(values) + 1))
+            values.append(image_path)
+        
+        if not update_columns:
+            raise HTTPException(status_code=400, detail="No fields to update were provided.")
+
+        values.append(id)
+        update_query = f"""
+            UPDATE services 
+            SET {', '.join(update_columns)} 
+            WHERE id = ${len(values)}
+        """
+        result = await conn.execute(update_query, *values)
+        if result == "UPDATE 0":
+            raise HTTPException(status_code=404, detail=f"Service with ID {id} not found.")
+        return {"message": "Service updated successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+# Update Team Member
+@router.put("/update-team-member/{id}/")
+async def update_team_member(id: int, name: str = None, designation: str = None, description: str = None, image: UploadFile = None):
+    conn = Database.pool
+    try:
+        update_columns = []
+        values = []
+
+        if name:
+            update_columns.append("name = $1")
+            values.append(name)
+        if designation:
+            update_columns.append("designation = $" + str(len(values) + 1))
+            values.append(designation)
+        if description:
+            update_columns.append("description = $" + str(len(values) + 1))
+            values.append(description)
+        if image:
+            image_path = await save_file(image)
+            update_columns.append("image_path = $" + str(len(values) + 1))
+            values.append(image_path)
+        
+        if not update_columns:
+            raise HTTPException(status_code=400, detail="No fields to update were provided.")
+
+        values.append(id)
+        update_query = f"""
+            UPDATE team_members 
+            SET {', '.join(update_columns)} 
+            WHERE id = ${len(values)}
+        """
+        result = await conn.execute(update_query, *values)
+        if result == "UPDATE 0":
+            raise HTTPException(status_code=404, detail=f"Team member with ID {id} not found.")
+        return {"message": "Team member updated successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
