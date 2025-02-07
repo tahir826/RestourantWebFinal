@@ -1,4 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
+from typing import List
 from app.db import Database
 from app.config import UPLOAD_DIR
 
@@ -11,6 +12,23 @@ async def save_file(file: UploadFile):
     with file_location.open("wb") as buffer:
         buffer.write(await file.read())
     return str(file_location)
+
+
+@router.get("/get-all-contacts/")
+async def get_all_contacts():
+    conn = Database.pool
+    try:
+        # Fetch all contact messages from the contact_us table
+        contacts = await conn.fetch("SELECT * FROM contact_us")
+        if not contacts:  # If no contacts found
+            raise HTTPException(status_code=404, detail="No contact messages found.")
+        
+        # Return the list of contact messages
+        return {
+            "contacts": [dict(contact) for contact in contacts]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
 # Add Service
@@ -154,6 +172,19 @@ async def delete_service(id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
+# Delete a Contact Us Message by ID
+@router.delete("/delete-contact/{id}/")
+async def delete_contact(id: int):
+    conn = Database.pool
+    try:
+        # Execute DELETE query on the contact_us table
+        result = await conn.execute("DELETE FROM contact_us WHERE id = $1", id)
+        if result == "DELETE 0":  # If no rows are deleted
+            raise HTTPException(status_code=404, detail=f"Contact message with ID {id} not found.")
+        return {"message": "Contact message deleted successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
 
 # Delete an Event
 @router.delete("/delete-event/{id}/")
@@ -214,6 +245,7 @@ async def update_event(id: int, name: str = None, description: str = None, price
         return {"message": "Event updated successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
 
 
 # Update Service

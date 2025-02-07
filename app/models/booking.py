@@ -5,6 +5,7 @@ class BookingInput(BaseModel):
     user_id: str
     name: str
     email: EmailStr
+    phone_no: str
     datetime: datetime
     no_of_people: int
     special_request: str = None
